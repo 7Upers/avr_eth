@@ -17,8 +17,6 @@
 #include "avr_compat.h"
 #include "net.h"
 
-#define LED PB5
-
 // please modify the following two lines. mac and ip have to be unique
 // in your local area network. You can not have the same numbers in
 // two devices:
@@ -66,13 +64,12 @@ int main(void)
 	stdout = &uart_io;
 
 	uint16_t plen;
-	uint8_t i=0;
 
 	// set the clock speed to 8MHz
 	// set the clock prescaler. First write CLKPCE to enable setting of clock the
 	// next four instructions.
 	CLKPR=(1<<CLKPCE);
-	CLKPR=1; // 8 MHZ
+	CLKPR=(1<<CLKPS0); // 16/2=8 MHZ
 
         /* enable PB0, reset as output */
         DDRB|= (1<<PB0);
@@ -83,16 +80,10 @@ int main(void)
         PORTB|= (1<<PB0);
         delay_ms(100);
 
-        // LED
-        /* enable LED, LED as output */
-        DDRB|= (1<<LED);
-        /* set output to Vcc, LED off */
-        PORTB|= (1<<LED);
-
 	//initialize enc28j60
 	enc28j60Init(mymac);
 	printf("ethernet inited\r\n");
-
+/*
 	printf("start test enc28j60 communication\r\n");
 
 	//MAADR0
@@ -122,7 +113,7 @@ int main(void)
 	PORTB |= (1<<PB2);
 	printf("enc28j60 deactivated\r\n");
 	printf ("enc28j60 return 0x%02x\r\n",SPDR);
-
+*/
 	/* Magjack leds configuration, see enc28j60 datasheet, page 11 */
 	// LEDA=greed LEDB=yellow
 	//
@@ -181,17 +172,6 @@ int main(void)
                         continue;
                 }
                 
-                if (i){
-                        /* set output to Vcc, LED off */
-                        PORTB|= (1<<LED);
-                        i=0;
-                }else{
-                        /* set output to GND, LED on */
-                        PORTB &= ~(1<<LED);
-                        i=1;
-                }
-
-                        
                 if(buf[IP_PROTO_P]==IP_PROTO_ICMP_V && buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V){
                         // a ping packet, let's send pong
                         make_echo_reply_from_request(buf,plen);

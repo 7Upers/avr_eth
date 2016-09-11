@@ -151,7 +151,7 @@ void enc28j60Init(uint8_t* macaddr)
 	ENC28J60_CONTROL_DDR |= 1<<ENC28J60_CONTROL_CS;
 	CSPASSIVE;
         //	
-	DDRB  |= 1<<PB2 |1<<PB3 | 1<<PB5; // mosi, sck, ss output
+	DDRB|=(1<<PB2)|(1<<PB3)|(1<<PB5); // mosi, sck, ss output
 	cbi(DDRB,PINB4); // MISO is input
         //
 	CSPASSIVE;
